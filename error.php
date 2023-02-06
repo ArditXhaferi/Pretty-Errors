@@ -3,6 +3,8 @@ global $wp_version;
 $error_array = error_get_last();
 $file = file_get_contents($error_array['file']);
 $file_content_lines = file($error_array['file'], FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$file_content_lines = get_surrounding_elements($file_content_lines, (int)$error_array["line"] ?? 0);
+$error_index = (int)$error_array["line"];
 $lines_regex = '/^#\d+.*$/m';
 $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $exceptions = [
@@ -32,9 +34,14 @@ $errorMessage = $error_array['message'];
 $errorType = substr($errorMessage, 0, strpos($errorMessage, ":"));
 
 // Error Title
-$errorTitle = substr($errorMessage, strpos($errorMessage, ":") + 1, strpos($errorMessage, " in") - strpos($errorMessage, ":") - 1);
-$errorTitle = trim(strstr($errorTitle, ' '));
-$error_array['line'] = $error_array['line'] - 1;
+if(strlen($errorMessage) > 150){
+    $errorTitle = substr($errorMessage, strpos($errorMessage, ":") + 1, strpos($errorMessage, " in") - strpos($errorMessage, ":") - 1);
+    $errorTitle = trim(strstr($errorTitle, ' '));
+}else{
+    $errorTitle = $errorMessage;
+}
+
+$error_array['line'] = $error_array['line'];
 
 function generate_curl_command($url) {
     return "curl '" . $url . "' \\
@@ -49,6 +56,14 @@ function generate_curl_command($url) {
         -H 'connection: keep-alive' \\
         -H 'host: example-app.test';";
 }
+
+function get_surrounding_elements($array, $index) {
+    $start = max(0, $index - 50);
+    $end = min(count($array) - 1, $index + 50);
+    $result = array_slice($array, $start, $end - $start + 1);
+    return array_combine(range($start+1, $end+1), $result);
+}
+
 ?>
 
 <html class="bg-gray-300 w-full py-20">
@@ -94,11 +109,11 @@ function generate_curl_command($url) {
         <span class="py-1 text-lg px-4 items-center flex gap-3 rounded-sm bg-gray-100 w-fit capitalize"><?= $error_type_text ?></span>
         <div class='flex'>
             <span class='text-sm text-gray-500 mr-4'>PHP <?= phpversion() ?></span>
-            <span class='text-sm text-gray-500 flex'>
-                        <img class='mr-2' width='16px'
-                             src='https:static-00.iconduck.com/assets.00/wordpress-icon-512x512-38lz8224.png'/>
-                        <?= $wp_version ?>
-                    </span>
+            <span class='text-sm text-gray-500 flex items-center'>
+                <img class='mr-2 w-4 h-4'
+                     src='https:static-00.iconduck.com/assets.00/wordpress-icon-512x512-38lz8224.png'/>
+                <?= $wp_version ?>
+            </span>
         </div>
     </div>
     <h1 class='font-semibold text-xl leading-slug mt-6 mb-4'><?= $errorTitle ?></h1>
@@ -106,7 +121,7 @@ function generate_curl_command($url) {
 <div class='bg-white flex w-[70%] shadow-lg mb-20'>
     <div class='flex flex-col w-[30%]'>
         <div class='px-6 py-4 border-b break-all border-gray-200 bg-blue-400 text-white'>
-            <?= str_replace(ABSPATH, "", $error_array['file']) ?>: <?= $error_array['line'] + 1 ?> <br>
+            <?= str_replace(ABSPATH, "", $error_array['file']) ?>: <?= $error_array['line'] ?> <br>
             <b> <?= $errorTitle ?></b>
         </div>
         <?php foreach ($lines[0] as $line) { ?>
@@ -117,18 +132,18 @@ function generate_curl_command($url) {
         <?php } ?>
     </div>
     <div class='w-full overflow-scroll border-l border-gray-200 flex w-[70%]  mask-fade-r'>
-        <div class="py-8 flex flex-col max-w-[35px]">
+        <div class="py-8 flex flex-col w-fit max-w-[50px]">
             <p class="px-2 font-mono leading-loose select-none">
-                <?php foreach ($file_content_lines as $index => $line){ ?>
-            <p class="px-2 <?= (int)$error_array['line'] == $index ? 'font-semibold text-white-900 bg-blue-200' : '' ?>">
-                <span class="text-gray-500 leading-[28px]"><?= $index + 1 ?></span>
+                <?php foreach (array_keys($file_content_lines) as $line){ ?>
+            <p class="px-2 <?= $error_index == $line ? 'font-semibold text-white-900 bg-blue-200' : '' ?>">
+                <span class="text-gray-500 leading-[28px]"><?= $line ?></span>
             </p>
             <?php } ?>
             </p>
         </div>
         <div class='py-8 w-full'>
             <?php foreach ($file_content_lines as $index => $line) { ?>
-                <p class="px-4 whitespace-nowrap leading-[28px] hover:bg-blue-100 <?= (int)$error_array['line'] == $index ? 'bg-blue-100' : '' ?>"><?= str_replace([' ', "\t"], ['&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;'], htmlspecialchars($line)) ?></p>
+                <p class="px-4 whitespace-nowrap leading-[28px] hover:bg-blue-100 <?= $error_index == $index ? 'bg-blue-100' : '' ?>"><?= str_replace([' ', "\t"], ['&nbsp;', '&nbsp;&nbsp;&nbsp;&nbsp;'], htmlspecialchars($line)) ?></p>
             <?php } ?>
         </div>
     </div>
@@ -206,9 +221,9 @@ function generate_curl_command($url) {
         let currentScrollPosition = window.pageYOffset;
         if (currentScrollPosition > lastScrollPosition) {
             nav.classList.remove("bg-gray-300")
-            nav.classList.add("bg-white", "border-b")
+            nav.classList.add("bg-white", "border-b", "shadow-lg")
         } else if(currentScrollPosition < 50) {
-            nav.classList.remove("bg-white", "border-b")
+            nav.classList.remove("bg-white", "border-b", "shadow-lg")
             nav.classList.add("bg-gray-300")
         }
         lastScrollPosition = currentScrollPosition;

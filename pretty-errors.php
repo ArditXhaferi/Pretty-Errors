@@ -78,6 +78,7 @@ require plugin_dir_path(__FILE__) . 'includes/class-pretty-errors.php';
 function run_pretty_errors()
 {
 
+    //TODO: Create db_error.php file dynamically 
     ini_set("error_reporting", E_ALL);
     ini_set("display_errors", 'off');
 
