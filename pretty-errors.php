@@ -87,7 +87,10 @@ run_pretty_errors();
 
 function custom_default_wp_die_handler( $message, $title = '', $args = array() ) {
     global $wp_version;
-
+        $error_array = error_get_last();
+    clearstatcache();
+        $file = file_get_contents($error_array['file']);
+        $file_content = htmlspecialchars($file)
     ?>
 
     <html class="bg-gray-300 w-full py-12">
@@ -108,17 +111,30 @@ function custom_default_wp_die_handler( $message, $title = '', $args = array() )
         let dom = "";
         let wpImageUrl = "<img class='mr-2' width='16px' src='https://static-00.iconduck.com/assets.00/wordpress-icon-512x512-38lz8224.png' />";
         content = content.split("//*Script*")[0]
-        console.log(content)
         errorType = content.split(":")[0]
         errorTitle = content.split(":")[1]
-        header = "<div class='bg-white p-8 w-[90%] shadow-lg'>"
+        first_line = content.split(':').slice(1).join(':').split("Stack trace:")[0].trim()
+        first_line = first_line.split("in")
+        const regex = /^#\d+.*$/gm;
+        const lines = content.match(regex);
+        let line = "<div class='flex flex-col'>";
+        line += "<div class='px-6 py-4 border-b border-gray-200 bg-blue-400 text-white'>" + first_line[1] + "): <br>" + "<b>" + first_line[0] + "</b></div>";
+        lines.forEach((singleline, index) => {
+            let errorline = singleline.split("):")[0];
+            let errorlinetype = singleline.split("):")[1];
+            line += "<div class='px-6 py-4 border-b border-gray-200 hover:bg-blue-400 hover:text-white'>" + errorline.substring(3) + "): <br>" + "<b>" + errorlinetype + "</b></div>";
+        })
+        line += "</div>"
+        header = "<div class='bg-white p-8 w-[90%] shadow-lg mb-10'>"
         type = `<span class="py-1 text-lg px-4 items-center flex gap-3 rounded-sm bg-gray-100 w-fit capitalize">`+ errorType +`</span>`
         php = `<span class='text-sm text-gray-500 mr-4'>PHP `+phpVersion+`</span>`
         wp = `<span class='text-sm text-gray-500 flex'>`+ wpImageUrl +wpVersion+`</span>`
         typeRow = `<div class="w-full flex justify-between items-center">` + type + "<div class='flex'>" + php + wp + "</div>" + `</div>`
         title = "<h1 class='font-semibold text-xl leading-slug mt-6 mb-4'>" + errorTitle + "</h1>"
-        dom += header + typeRow +title + "</div>";
-        document.body.innerHTML = dom
+        dom += header + typeRow + title + "</div>";
+
+        body = "<div class='bg-white w-[90%] shadow-lg'>"+line+"</div>"
+        document.body.innerHTML = "<div class='flex items-center w-full flex-col'>" + dom + body + "</div>";
     </script>
     <?php
     die();
