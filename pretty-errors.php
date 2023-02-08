@@ -107,6 +107,7 @@ function custom_default_wp_die_handler( $message, $title = '', $args = array() )
         //*Script*
         let phpVersion = "<?= phpversion() ?>";
         let wpVersion = "<?= $wp_version ?>";
+        let file_content = `<?= $file_content ?>`;
         let content = document.body.textContent;
         let dom = "";
         let wpImageUrl = "<img class='mr-2' width='16px' src='https://static-00.iconduck.com/assets.00/wordpress-icon-512x512-38lz8224.png' />";
@@ -133,7 +134,7 @@ function custom_default_wp_die_handler( $message, $title = '', $args = array() )
         title = "<h1 class='font-semibold text-xl leading-slug mt-6 mb-4'>" + errorTitle + "</h1>"
         dom += header + typeRow + title + "</div>";
 
-        body = "<div class='bg-white w-[90%] shadow-lg'>"+line+"</div>"
+        body = "<div class='bg-white flex w-[90%] shadow-lg'>"+line + "<div class='w-full overflow-scroll'><pre class='py-8 px-4 w-full'>" + file_content  + "</pre></div></div>"
         document.body.innerHTML = "<div class='flex items-center w-full flex-col'>" + dom + body + "</div>";
     </script>
     <?php
