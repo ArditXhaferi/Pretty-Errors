@@ -42,10 +42,8 @@ if (strlen($errorMessage) > 150) {
 } else {
     $errorTitle = $errorMessage;
 }
-
-$error_array['line'] = $error_array['line'];
-
-function generate_curl_command($url) {
+function generate_curl_command($url): string
+{
     $method = $_SERVER['REQUEST_METHOD'];
     $curl_request = "curl '$url' \\\n";
     $curl_request .= "      -X $method \\\n";
@@ -93,12 +91,16 @@ function get_surrounding_elements($array, $index)
                 </svg>
                 <p class="ml-2 font-medium text-gray-800 group-hover:text-blue-400 mr-10">CONTEXT</p>
             </a>
-            <a href="#share" class="flex cursor-pointer group">
+            <a href="#share" class="flex cursor-pointer group relative">
                 <svg class="w-3" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="share" role="img"
                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                     <path class="fill-[#1F2937] group-hover:fill-[#60A5FA]"
                           d="M503.7 226.2l-176 151.1c-15.38 13.3-39.69 2.545-39.69-18.16V272.1C132.9 274.3 66.06 312.8 111.4 457.8c5.031 16.09-14.41 28.56-28.06 18.62C39.59 444.6 0 383.8 0 322.3c0-152.2 127.4-184.4 288-186.3V56.02c0-20.67 24.28-31.46 39.69-18.16l176 151.1C514.8 199.4 514.8 216.6 503.7 226.2z"></path>
                 </svg>
+                <!-- Tooltip text here -->
+                <span class="absolute shadow-lg hidden group-hover:flex -left-5 top-20 -translate-y-full py-2 px-4 bg-gray-600 rounded-lg text-center text-white text-sm after:content-[''] after:absolute after:left-1/2 after:top-[-16px] after:rotate-180 after:-translate-x-1/2 after:border-8 after:border-x-transparent after:border-b-transparent after:border-t-gray-600">
+                    Coming Soon
+                </span>
                 <p class="ml-2 font-medium text-gray-800 group-hover:text-blue-400 mr-10">SHARE</p>
             </a>
         </div>
