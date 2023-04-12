@@ -8,13 +8,13 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://ardit.dev
+ * @link              https://ardit.dev/posts/2023-03-18-pretty-wp-errors-my-first-wp-plugin
  * @since             1.0.0
  * @package           Pretty_Errors
  *
  * @wordpress-plugin
  * Plugin Name:       Pretty Errors
- * Plugin URI:        https://ardit.dev
+ * Plugin URI:        https://ardit.dev/posts/2023-03-18-pretty-wp-errors-my-first-wp-plugin
  * Description:       This is a description of the plugin.
  * Version:           1.0.0
  * Author:            Ardit Xhaferi

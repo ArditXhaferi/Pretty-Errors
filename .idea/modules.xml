@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/pretty-errors.iml" filepath="$PROJECT_DIR$/.idea/pretty-errors.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Pretty-Errors.iml" filepath="$PROJECT_DIR$/.idea/Pretty-Errors.iml" />
     </modules>
   </component>
 </project>

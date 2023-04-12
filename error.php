@@ -67,7 +67,7 @@ function get_surrounding_elements($array, $index)
 
 <html class="bg-gray-300 w-full py-20">
 <head>
-    <script src="https:cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="flex items-center w-full flex-col scrollbar-lg w-full">
 <nav class="z-50 fixed top-0 h-[80px] w-full">
